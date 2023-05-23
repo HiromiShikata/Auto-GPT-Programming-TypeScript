@@ -1,0 +1,13 @@
+*.xml
+.gitignore
+.prettierignore
+.gitkeep
+
+
+.idea
+reports
+dist
+bin
+.npmignore
+*.map
+CHANGELOG.md
