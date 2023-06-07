@@ -54,9 +54,9 @@ ${stderr}
         errorMessage,
       );
       console.log(`Thought: ${res.thoughtJapanese}
-File paths to read: ${res.filePathsToRead}
+File paths to read: ${res.filePathsToRead.join(', ')}
 Unified diff formatted patch: 
-${res.unifiedDiffFormattedPatch}
+${res.unifiedDiffFormattedPatch ?? 'null'}
 `);
       if (res.unifiedDiffFormattedPatch) {
         //           const patchApplyCommand =               `cd ${projectRootPath} && patch -p1 <<'EOF'
