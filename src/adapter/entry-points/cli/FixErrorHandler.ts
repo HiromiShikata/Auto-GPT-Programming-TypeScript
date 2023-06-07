@@ -1,23 +1,27 @@
 import { FixErrorUseCase } from "../../../domain/usecases/FixErrorUseCase";
 import { FsFileRepository } from "../../repositories/FsFileRepository";
-import { BashTestExecutor } from "../../repositories/BashTestExecutor";
-import { ChatGptUnitTestCreator } from "../../repositories/ChatGptUnitTestCreator";
 import { ChatGptPatchCreator } from "../../repositories/ChatGptPatchCreator";
+import { Configuration, OpenAIApi } from "openai";
+import {ChildProcessBashExecutor} from "../../repositories/ChildProcessBashExecutor";
 
-export const fixErrorCliHandler = async () => {
+export const fixErrorCliHandler = async (
+  context: string,
+  projectRootPath: string,
+  testCommand: string,
+  modelName: "gpt-3.5-turbo" | "gpt-4"
+) => {
+  const configuration = new Configuration({
+    apiKey:
+      modelName === "gpt-3.5-turbo"
+        ? process.env.OPENAI_API_KEY_3_5
+        : process.env.OPENAI_API_KEY_4,
+  });
+  const openai = new OpenAIApi(configuration);
   const useCase = new FixErrorUseCase(
     new FsFileRepository(),
-    new BashTestExecutor(),
-    // new ChatGptPatchCreator('gpt-4' )
-    new ChatGptPatchCreator("gpt-3.5-turbo")
+    new ChildProcessBashExecutor(),
+    new ChatGptPatchCreator(modelName, openai)
   );
 
-  await useCase.run(
-    "I write test file but it looks wrong.",
-    "/home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project",
-    "npm run build && npm run test"
-  );
+  await useCase.run(context, projectRootPath, testCommand);
 };
-// fixErrorCliHandler()
-//   .then(() => console.log("done"))
-//   .catch((e) => console.error(e));

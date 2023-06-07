@@ -9,14 +9,10 @@ import { SourceFile } from "../../domain/entities/SourceFile";
 dotenv.config();
 
 export class ChatGptPatchCreator implements PatchCreator {
-  openai: OpenAIApi;
-
-  constructor(private readonly modelName: "gpt-3.5-turbo" | "gpt-4") {
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    this.openai = new OpenAIApi(configuration);
-  }
+  constructor(
+    private readonly modelName: "gpt-3.5-turbo" | "gpt-4",
+    private readonly openai: OpenAIApi
+  ) {}
 
   fix = async (
     context: string,
