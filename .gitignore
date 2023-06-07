@@ -331,3 +331,7 @@ dist
 
 .idea
 reports
+
+*.orig
+*.rej
+
