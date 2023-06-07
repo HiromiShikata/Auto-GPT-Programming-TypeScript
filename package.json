@@ -7,7 +7,7 @@
     "prettier": "prettier --write '**/*'",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
-    "format": "npm run prettier && npm run lint-fix",
+    "fmt": "npm run prettier && npm run lint-fix",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "jest"
   },
@@ -49,5 +49,9 @@
     "prettier": "^2.8.7",
     "ts-jest": "^29.0.5",
     "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "openai": "^3.2.1"
   }
 }

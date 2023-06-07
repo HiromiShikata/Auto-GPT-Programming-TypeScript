@@ -11,3 +11,11 @@ bin
 .npmignore
 *.map
 CHANGELOG.md
+.env
+.env.*
+LICENSE
+*.txt
+*.orig
+*.rej
+*.diff
+*.log
