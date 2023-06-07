@@ -1,8 +1,8 @@
-import { ChatGptPatchCreator } from "./ChatGptPatchCreator";
-import { ChatGptUnitTestCreator } from "./ChatGptUnitTestCreator";
+import { ChatGptPatchCreator } from './ChatGptPatchCreator';
+import { ChatGptUnitTestCreator } from './ChatGptUnitTestCreator';
 
-describe("ChatGptPatchCreator", () => {
-  test("tmp", () => {
+describe('ChatGptPatchCreator', () => {
+  test('tmp', () => {
     const jsonText = `{
   "filePathsToRead": [
     "/home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/adapter-interfaces/UserRepository.ts",
@@ -16,10 +16,10 @@ describe("ChatGptPatchCreator", () => {
 }`;
     const json = JSON.parse(jsonText);
   });
-  describe("fix", () => {
+  describe('fix', () => {
     jest.setTimeout(10 * 60 * 1000);
 
-    test("should be return filePaths", async () => {
+    test('should be return filePaths', async () => {
       const creator = new ChatGptPatchCreator();
       const result = await creator.fix(
         `I made test The test for /home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/GetUserUseCase.ts .
@@ -66,13 +66,13 @@ npm ERR! A complete log of this run can be found in:
 npm ERR!     /home/hiromi/.npm/_logs/2023-06-06T14_26_01_793Z-debug.log
 hiromi@202303:~/git/umino/Auto-GPT-Programming-TypeScript/sample-project$ 
 
-`
+`,
       );
       expect(result.filePathsToRead.length).toBeGreaterThan(0);
       expect(result.thought.length).toBeGreaterThan(0);
       expect(result.thoughtJapanese.length).toBeGreaterThan(0);
     });
-    test("second time / should be return filePaths or patch", async () => {
+    test('second time / should be return filePaths or patch', async () => {
       const creator = new ChatGptPatchCreator();
       const result = await creator.fix(
         `I made test The test for /home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/GetUserUseCase.ts .
@@ -148,12 +148,12 @@ npm ERR! A complete log of this run can be found in:
 npm ERR!     /home/hiromi/.npm/_logs/2023-06-06T14_26_01_793Z-debug.log
 hiromi@202303:~/git/umino/Auto-GPT-Programming-TypeScript/sample-project$ 
 
-`
+`,
       );
       expect(result).toEqual({});
     });
   });
-  describe("readOnlyCodeBlock", () => {
+  describe('readOnlyCodeBlock', () => {
     const sampleResult = `Here is the \`UnitTestCreatorResponse\` in JSON format with the file paths to read and the unit test content to write:
 
 \`\`\`json
@@ -169,12 +169,12 @@ hiromi@202303:~/git/umino/Auto-GPT-Programming-TypeScript/sample-project$
 The \`unitTestContent\` field contains the content of the unit test file that will be created for the \`GetUserUseCase\` module. The \`describe\` and \`it\` functions are used to organize and run the different tests. The \`beforeEach\` and \`afterEach\` functions are used to set up and tear down the test environment, respectively. The test cases use the Jest framework's mock functionality to test the \`execute\` function of the GetUserUseCase module. This unit test file is written in TypeScript to take advantage of its static typing and other features.`;
     test.each`
       input                                          | expected
-      ${"aaa```\ntest\n```bbb```json\ntest2\n```"}   | ${["test", "test2"]}
-      ${"aaa```\ntest\n```bbb```\njson\ntest2\n```"} | ${["test", "json\ntest2"]}
-      ${"aaa```\ntest\n```bbb"}                      | ${["test"]}
-      ${"aaa```\nte\nst\n```bbb"}                    | ${["te\nst"]}
-      ${"aaa```\ntest\ntest2\n```bbb"}               | ${["test\ntest2"]}
-      ${"aaa```json\ntest\n```bbb"}                  | ${["test"]}
+      ${'aaa```\ntest\n```bbb```json\ntest2\n```'}   | ${['test', 'test2']}
+      ${'aaa```\ntest\n```bbb```\njson\ntest2\n```'} | ${['test', 'json\ntest2']}
+      ${'aaa```\ntest\n```bbb'}                      | ${['test']}
+      ${'aaa```\nte\nst\n```bbb'}                    | ${['te\nst']}
+      ${'aaa```\ntest\ntest2\n```bbb'}               | ${['test\ntest2']}
+      ${'aaa```json\ntest\n```bbb'}                  | ${['test']}
       ${sampleResult} | ${[`{
   "filePathsToRead": [
     "/home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/GetUserUseCase.ts"
@@ -196,7 +196,7 @@ The \`unitTestContent\` field contains the content of the unit test file that wi
         const patchCreator = new ChatGptPatchCreator();
         const result = patchCreator.readOnlyCodeBlock(input);
         expect(result).toEqual(expected);
-      }
+      },
     );
   });
 });

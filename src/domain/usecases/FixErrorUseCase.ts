@@ -1,29 +1,29 @@
-import { FileRepository } from "./adapter-interfaces/tools/FileRepository";
-import { PatchCreator } from "./adapter-interfaces/tools/PatchCreator";
-import { SourceFile } from "../entities/SourceFile";
-import { BashExecutor } from "./adapter-interfaces/tools/BashExecutor";
+import { FileRepository } from './adapter-interfaces/tools/FileRepository';
+import { PatchCreator } from './adapter-interfaces/tools/PatchCreator';
+import { SourceFile } from '../entities/SourceFile';
+import { BashExecutor } from './adapter-interfaces/tools/BashExecutor';
 
 export class FixErrorUseCase {
   constructor(
     private readonly fileRepository: FileRepository,
     private readonly bashExecutor: BashExecutor,
-    private readonly patchCreator: PatchCreator
+    private readonly patchCreator: PatchCreator,
   ) {}
 
   run = async (
     context: string,
     projectRootPath: string,
-    testCommand: string
+    testCommand: string,
   ): Promise<void> => {
     let relatedSourceFiles: SourceFile[] = [];
     for (let i = 0; i < 10; i++) {
       const { stderr, stdout, exitStatusCode } =
         await this.bashExecutor.execute(
-          `cd ${projectRootPath} && ${testCommand}`
+          `cd ${projectRootPath} && ${testCommand}`,
         );
       if (exitStatusCode === 0) {
         console.log(`stdout: ${stdout}`);
-        console.log("✨🎉Finished to fix error🎉✨");
+        console.log('✨🎉Finished to fix error🎉✨');
         return;
       }
       console.log(`🔥Failed the test🔥
@@ -36,7 +36,7 @@ stderr:
 ${stderr}
 
 start to create patch with files: 
-${relatedSourceFiles.map((f) => `  - ${f.filePath}`).join("\n")}
+${relatedSourceFiles.map((f) => `  - ${f.filePath}`).join('\n')}
 `);
       const errorMessage = `
 # executed comma
@@ -51,7 +51,7 @@ ${stderr}
       const res = await this.patchCreator.fix(
         context,
         relatedSourceFiles,
-        errorMessage
+        errorMessage,
       );
       console.log(`Thought: ${res.thoughtJapanese}
 File paths to read: ${res.filePathsToRead}
@@ -68,7 +68,7 @@ ${res.unifiedDiffFormattedPatch}
 EOF
 `;
         const patchApplyResult = await this.bashExecutor.execute(
-          patchApplyCommand
+          patchApplyCommand,
         );
         if (patchApplyResult.exitStatusCode !== 0) {
           console.error(
@@ -80,15 +80,15 @@ command:
 ${patchApplyCommand}
 
 patchApplyResult:
-${JSON.stringify(patchApplyResult)}`
+${JSON.stringify(patchApplyResult)}`,
           );
         }
       }
       relatedSourceFiles = await this.fileRepository.read(
         res.filePathsToRead,
-        projectRootPath
+        projectRootPath,
       );
     }
-    throw new Error("Failed to fix error");
+    throw new Error('Failed to fix error');
   };
 }

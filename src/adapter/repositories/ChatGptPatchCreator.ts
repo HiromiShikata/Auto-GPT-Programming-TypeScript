@@ -1,23 +1,23 @@
-import { Configuration, OpenAIApi } from "openai";
-import * as dotenv from "dotenv";
+import { Configuration, OpenAIApi } from 'openai';
+import * as dotenv from 'dotenv';
 import {
   PatchCreator,
   PatchCreatorResponse,
-} from "../../domain/usecases/adapter-interfaces/tools/PatchCreator";
-import { SourceFile } from "../../domain/entities/SourceFile";
+} from '../../domain/usecases/adapter-interfaces/tools/PatchCreator';
+import { SourceFile } from '../../domain/entities/SourceFile';
 
 dotenv.config();
 
 export class ChatGptPatchCreator implements PatchCreator {
   constructor(
-    private readonly modelName: "gpt-3.5-turbo" | "gpt-4",
-    private readonly openai: OpenAIApi
+    private readonly modelName: 'gpt-3.5-turbo' | 'gpt-4',
+    private readonly openai: OpenAIApi,
   ) {}
 
   fix = async (
     context: string,
     relatedSourceFiles: SourceFile[],
-    errorMessage: string
+    errorMessage: string,
   ): Promise<PatchCreatorResponse> => {
     const prompt = `Please create patch using output format.
 
@@ -48,7 +48,7 @@ ${sourceFile.fileContent}
 \`\`\`
 `;
   })
-  .join("\n")}
+  .join('\n')}
 
 `;
     for (let i = 0; i < 5; i++) {
@@ -61,19 +61,19 @@ ${sourceFile.fileContent}
   };
 
   private executeCompletion = async (
-    prompt: string
+    prompt: string,
   ): Promise<PatchCreatorResponse | null> => {
     const completion = await this.openai.createChatCompletion(
       {
         model: this.modelName,
         messages: [
           {
-            role: "system",
+            role: 'system',
             content:
-              "You are well experienced TypeScript professional engineer.",
+              'You are well experienced TypeScript professional engineer.',
           },
           {
-            role: "user",
+            role: 'user',
             content: prompt,
           },
         ],
@@ -81,9 +81,9 @@ ${sourceFile.fileContent}
       },
       {
         timeout: 10 * 60 * 1000,
-      }
+      },
     );
-    const result = completion.data.choices[0].message?.content ?? "";
+    const result = completion.data.choices[0].message?.content ?? '';
     const converted = this.convertApiResultToPatchCreatorResponse(result);
     if (!converted) {
       console.error(`can't convert api result. result: ${result}`);
@@ -104,15 +104,15 @@ ${sourceFile.fileContent}
     return result;
   };
   convertApiResultToPatchCreatorResponse = (
-    result: string
+    result: string,
   ): PatchCreatorResponse | null => {
     const isCollectObject = (obj: unknown): obj is PatchCreatorResponse => {
       return (
         obj !== null &&
-        typeof obj === "object" &&
-        "filePathsToRead" in obj &&
-        "unifiedDiffFormattedPatch" in obj &&
-        "thought" in obj
+        typeof obj === 'object' &&
+        'filePathsToRead' in obj &&
+        'unifiedDiffFormattedPatch' in obj &&
+        'thought' in obj
       );
     };
     try {
