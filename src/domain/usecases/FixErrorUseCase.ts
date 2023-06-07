@@ -1,12 +1,12 @@
 import { FileRepository } from "./adapter-interfaces/tools/FileRepository";
-import { TestExecutor } from "./adapter-interfaces/tools/TestExecutor";
 import { PatchCreator } from "./adapter-interfaces/tools/PatchCreator";
 import { SourceFile } from "../entities/SourceFile";
+import { BashExecutor } from "./adapter-interfaces/tools/BashExecutor";
 
 export class FixErrorUseCase {
   constructor(
     private readonly fileRepository: FileRepository,
-    private readonly bashExecutor: TestExecutor,
+    private readonly bashExecutor: BashExecutor,
     private readonly patchCreator: PatchCreator
   ) {}
 

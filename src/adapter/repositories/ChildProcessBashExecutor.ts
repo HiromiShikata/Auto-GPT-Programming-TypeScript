@@ -1,6 +1,6 @@
-import { TestExecutor } from "../../domain/usecases/adapter-interfaces/tools/TestExecutor";
+import { BashExecutor } from "../../domain/usecases/adapter-interfaces/tools/BashExecutor";
 
-export class BashTestExecutor implements TestExecutor {
+export class ChildProcessBashExecutor implements BashExecutor {
   constructor() {}
 
   execute = (
