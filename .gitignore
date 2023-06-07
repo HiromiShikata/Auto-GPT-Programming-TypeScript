@@ -335,3 +335,5 @@ reports
 *.orig
 *.rej
 
+
+*.diff
