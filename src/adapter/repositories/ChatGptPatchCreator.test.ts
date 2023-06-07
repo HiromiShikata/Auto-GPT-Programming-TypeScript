@@ -1,26 +1,12 @@
 import { ChatGptPatchCreator } from './ChatGptPatchCreator';
-import { ChatGptUnitTestCreator } from './ChatGptUnitTestCreator';
+import { OpenAIApi } from 'openai';
 
 describe('ChatGptPatchCreator', () => {
-  test('tmp', () => {
-    const jsonText = `{
-  "filePathsToRead": [
-    "/home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/adapter-interfaces/UserRepository.ts",
-    "/home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/GetUserUseCase.test.ts"
-  ],
-  "patch": "@@ -8,7 +8,7 @@ import { UserRepository } from '../adapter-interfaces/UserRepository'; \\n export class GetUserUseCase {\\n   private userRepository: UserRepository;\\n \\n-  constructor(userRepository: UserRepository) {\\n+  constructor(userRepository: { create: (user: User) => Promise<void>, getById: (id: string) => Promise<User> }) {\\n     this.userRepository = userRepository;\\n   }\\n \\n",
-  "thought": "The 'UserRepository' is imported from 'UserRepository.ts', where the User model is defined, but 'create' method is undefined here. The test is trying to create a new User with the unknown model. I need to fix the 'create' method in 'UserRepository.ts', so 'GetUserUseCase.test.ts' can recognize it. I also need to return a valid User instance instead of null.",
-  "thoughtJapanese": " 'UserRepository' は 'UserRepository.ts' からインポートされており、ここでは 'create' メソッドが未定義です。テストは、未知のモデルで新しい User を作成しようとしています。私は 'UserRepository.ts' の 'create' メソッドを修正して、'GetUserUseCase.test.ts' がそれを認識できるようにする必要があります。また、null ではなく有効な User インスタンスを返す必要があります。",
-  "thoughtSpanish": "El 'UserRepository' se importa de 'UserRepository.ts', donde se define el modelo de usuario, pero el método 'create' no está definido aquí. La prueba intenta crear un nuevo usuario con el modelo desconocido. Necesito arreglar el método 'create' en 'UserRepository.ts', para que 'GetUserUseCase.test.ts' lo reconozca. También necesito devolver una instancia de usuario válida en lugar de null.",
-  "thoughtFrench": "Le 'UserRepository' est importé depuis 'UserRepository.ts', où le modèle User est défini, mais la méthode 'create' n'est pas définie ici. Le test essaie de créer un nouvel utilisateur avec le modèle inconnu. Je dois corriger la méthode 'create' dans 'UserRepository.ts', afin que 'GetUserUseCase.test.ts' le reconnaisse. Je dois également renvoyer une instance User valide au lieu de null."
-}`;
-    const json = JSON.parse(jsonText);
-  });
   describe('fix', () => {
     jest.setTimeout(10 * 60 * 1000);
 
     test('should be return filePaths', async () => {
-      const creator = new ChatGptPatchCreator();
+      const creator = new ChatGptPatchCreator('gpt-3.5-turbo', new OpenAIApi());
       const result = await creator.fix(
         `I made test The test for /home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/GetUserUseCase.ts .
       But it looks wrong.
@@ -73,7 +59,7 @@ hiromi@202303:~/git/umino/Auto-GPT-Programming-TypeScript/sample-project$
       expect(result.thoughtJapanese.length).toBeGreaterThan(0);
     });
     test('second time / should be return filePaths or patch', async () => {
-      const creator = new ChatGptPatchCreator();
+      const creator = new ChatGptPatchCreator('gpt-3.5-turbo', new OpenAIApi());
       const result = await creator.fix(
         `I made test The test for /home/hiromi/git/umino/Auto-GPT-Programming-TypeScript/sample-project/src/domain/usecases/GetUserUseCase.ts .
 But it looks wrong.
@@ -193,7 +179,10 @@ The \`unitTestContent\` field contains the content of the unit test file that wi
         input: string;
         expected: string | null;
       }) => {
-        const patchCreator = new ChatGptPatchCreator();
+        const patchCreator = new ChatGptPatchCreator(
+          'gpt-3.5-turbo',
+          new OpenAIApi(),
+        );
         const result = patchCreator.readOnlyCodeBlock(input);
         expect(result).toEqual(expected);
       },

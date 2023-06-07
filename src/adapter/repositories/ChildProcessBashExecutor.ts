@@ -1,8 +1,7 @@
 import { BashExecutor } from '../../domain/usecases/adapter-interfaces/tools/BashExecutor';
+import { exec } from 'child_process';
 
 export class ChildProcessBashExecutor implements BashExecutor {
-  constructor() {}
-
   execute = (
     command: string,
   ): Promise<{
@@ -11,8 +10,12 @@ export class ChildProcessBashExecutor implements BashExecutor {
     stderr: string;
     exitStatusCode: number;
   }> =>
-    new Promise(async (resolve, reject) => {
-      const { exec } = await import('child_process');
+    new Promise<{
+      command: string;
+      stdout: string;
+      stderr: string;
+      exitStatusCode: number;
+    }>((resolve) => {
       exec(command, (error, stdout, stderr) => {
         resolve({
           command,

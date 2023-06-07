@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from 'openai';
+import { OpenAIApi } from 'openai';
 import * as dotenv from 'dotenv';
 import {
   PatchCreator,
