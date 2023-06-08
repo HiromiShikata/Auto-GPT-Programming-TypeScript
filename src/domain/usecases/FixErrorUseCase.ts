@@ -59,14 +59,10 @@ Unified diff formatted patch:
 ${res.unifiedDiffFormattedPatch ?? 'null'}
 `);
       if (res.unifiedDiffFormattedPatch) {
-        //           const patchApplyCommand =               `cd ${projectRootPath} && patch -p1 <<'EOF'
-        // ${res.unifiedDiffFormattedPatch}
-        // EOF
-        // `
-        const patchApplyCommand = `cd ${projectRootPath} && git apply --ignore-whitespace <<'EOF'
-${res.unifiedDiffFormattedPatch}
-EOF
-`;
+        const patchApplyCommand = `cd ${projectRootPath} && patch -p1 <<'EOF'
+        ${res.unifiedDiffFormattedPatch}
+        EOF
+        `;
         const patchApplyResult = await this.bashExecutor.execute(
           patchApplyCommand,
         );
