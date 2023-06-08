@@ -54,6 +54,7 @@ ${stderr}
         errorMessage,
       );
       console.log(`Thought: ${res.thoughtJapanese}
+Commit message: ${res.commitMessage}
 File paths to read: ${res.filePathsToRead.join(', ')}
 Unified diff formatted patch: 
 ${res.unifiedDiffFormattedPatch ?? 'null'}

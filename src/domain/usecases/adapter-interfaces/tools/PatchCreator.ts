@@ -4,6 +4,7 @@ export type PatchCreatorResponse = {
   unifiedDiffFormattedPatch: string | null;
   thought: string;
   thoughtJapanese: string;
+  commitMessage: string | null;
 };
 export interface PatchCreator {
   fix(

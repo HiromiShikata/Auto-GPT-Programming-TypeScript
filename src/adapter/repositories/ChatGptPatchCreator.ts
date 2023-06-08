@@ -32,6 +32,7 @@ type PatchCreatorResponse = {
   unifiedDiffFormattedPatch: string | null; // unified diff formatted path file from project root path to fix the error. this must be start with 'diff --git'. it can be apply with 'patch -p1' command.
   thought: string, // your thought. don't forget escape.
   thoughtJapanese: string, // describe your thought of this response  in Japanese. don't forget escape.
+  commitMessage: string | null, // commit message to apply this patch if we have. it should follow conventional-commit.
 }
 
 # Error message
@@ -112,7 +113,8 @@ ${sourceFile.fileContent}
         typeof obj === 'object' &&
         'filePathsToRead' in obj &&
         'unifiedDiffFormattedPatch' in obj &&
-        'thought' in obj
+        'thought' in obj &&
+        'commitMessage' in obj
       );
     };
     try {
