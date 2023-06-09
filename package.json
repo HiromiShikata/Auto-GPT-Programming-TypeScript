@@ -51,6 +51,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
+    "dayjs": "^1.11.8",
     "dotenv": "^16.0.3",
     "openai": "^3.2.1"
   }
