@@ -48,7 +48,7 @@ start to create patch with files:
 ${relatedSourceFiles.map((f) => `  - ${f.filePath}`).join('\n')}
 `);
       const errorMessage = `
-# executed comma
+# executed command
 ${testCommand}
 
 # stderr
