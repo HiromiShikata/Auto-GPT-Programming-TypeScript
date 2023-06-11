@@ -36,6 +36,7 @@
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/commander": "^2.12.2",
     "@types/jest": "^29.5.0",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
@@ -51,6 +52,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
+    "commander": "^10.0.1",
     "dayjs": "^1.11.8",
     "dotenv": "^16.0.3",
     "openai": "^3.2.1"
