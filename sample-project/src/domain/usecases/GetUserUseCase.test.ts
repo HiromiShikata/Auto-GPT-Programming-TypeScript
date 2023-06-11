@@ -2,7 +2,8 @@ import { User } from '../entities/User';
 import { UserRepository } from './adapter-interfaces/UserRepository';
 import { GetUserUseCase } from './GetUserUseCase';
 
-const mockUser: User = {
+const mockUser: Partial<User> = {
+  email: 'test@email.com',
   id: '123',
   name: 'Test User',
 };
