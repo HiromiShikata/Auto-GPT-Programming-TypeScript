@@ -1,0 +1,29 @@
+name: Publish npm package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - run: git config --global user.email "gh-actions"
+      - run: git config --global user.name "gh-actions"
+
+      - run: npx semantic-release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
