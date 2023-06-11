@@ -1,0 +1,40 @@
+version: 2.1
+
+executors:
+  node:
+    resource_class: small
+    docker:
+      - image: cimg/node:20.0.0
+jobs:
+  build-lint-test:
+    executor: node
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run fmt && git --no-pager diff && exit $(git diff | wc -l)
+      - run: npx commitlint --from=main
+      - run: npm run build
+      - run: npm run test
+      - store_test_results:
+          path: reports/jest-junit
+      - store_artifacts:
+          path: reports
+  publish:
+    executor: node
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run build
+      - run: npx semantic-release
+
+workflows:
+  build-lint-test:
+    jobs:
+      - build-lint-test
+      - publish:
+          requires:
+            - build-lint-test
+          context: oss
+          filters:
+            branches:
+              only: main
