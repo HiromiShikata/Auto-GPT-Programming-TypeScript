@@ -19,7 +19,7 @@ export class FixErrorUseCase {
     commandToSeeProjectStructure: string,
   ): Promise<void> => {
     let relatedSourceFiles: SourceFile[] = [];
-    const branchName = this.createBranchName(context);
+    // const branchName = this.createBranchName(context);
     //     const createBranchResult =await  this.bashExecutor.execute(
     // `cd ${projectRootPath}
     // && git switch -c ${branchName}
@@ -36,37 +36,40 @@ export class FixErrorUseCase {
         console.log('✨🎉Finished to fix error🎉✨');
         return;
       }
-      console.log(`🔥Failed the test🔥
-     
-stdout: 
-${stdout}
-
-stderr:
-${stderr}
-
-start to create patch with files: 
-${relatedSourceFiles.map((f) => `  - ${f.filePath}`).join('\n')}
-`);
+      console.log(`🔥Failed the test🔥`);
       const errorMessage = `
 # executed command
 ${testCommand}
 
+# stdout
+${stdout}
+
 # stderr
-${stderr}
+${stderr
+  .split('\n')
+  .filter(
+    (m) =>
+      !m.includes('Debugger listening on ws://') &&
+      !m.includes('For help, see: https://nodejs.org/en/docs/inspector') &&
+      !m.includes('Waiting for the debugger to disconnect...') &&
+      !m.includes('Debugger attached.'),
+  )
+  .join('\n')}
 `;
+      console.log(errorMessage);
       const res = await this.patchCreator.fix(
         context,
         relatedSourceFiles,
         errorMessage,
       );
       console.log(`Thought: ${res.thoughtJapanese}
-Commit message: ${res.commitMessage}
+Commit message: ${res.commitMessage ?? 'null'}
 File paths to read: ${res.filePathsToRead.join(', ')}
 Unified diff formatted patch: 
 ${res.unifiedDiffFormattedPatch ?? 'null'}
 `);
       if (res.unifiedDiffFormattedPatch) {
-        const patchApplyCommand = `cd ${projectRootPath} && patch --force -p1 <<'EOF'
+        const patchApplyCommand = `cd ${projectRootPath} && patch --ignore-whitespace --force -p1 <<'EOF'
         ${res.unifiedDiffFormattedPatch}
         EOF
         `;
@@ -89,7 +92,7 @@ ${res.unifiedDiffFormattedPatch ?? 'null'}
           //           }
         } else {
           console.error(
-            `Failed to apply patch. 
+            `Failed to apply patch.
 exitStatusCode: ${patchApplyResult.exitStatusCode}
 stdout: ${patchApplyResult.stdout}
 stderr: ${patchApplyResult.stderr}
