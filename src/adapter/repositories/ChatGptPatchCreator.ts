@@ -28,12 +28,15 @@ ${context}
 Please reply using valid JSON format.
 Object type is :
 type PatchCreatorResponse = {
-  filePathsToRead: string[]; // file path you should read to fix this error. It should be relative path from project root.
-  unifiedDiffFormattedPatch: string | null; // unified diff formatted path file from project root path to fix the error. this must be start with 'diff --git'. it can be apply with 'patch -p1' command.
+  filePathsToRead: string[]; // file path you should read to fix this error. It should be relative path from project root. We can't use wildcard. You should choose file from file tree. Maximum patch size is 1kb.
+  unifiedDiffFormattedPatch: string | null; // unified diff formatted path file from project root path to fix the error. this must be start with 'diff --git'. it can be apply with 'patch -p1' command. You must generate a definitively correct patch file. Please double check line number. 
   thought: string, // your thought. don't forget escape.
   thoughtJapanese: string, // describe your thought of this response  in Japanese. don't forget escape.
   commitMessage: string | null, // commit message to apply this patch if we have. it should follow conventional-commit.
 }
+
+# Rule
+Please note that if a CONTRIBUTING.md file is defined in this project, you must add it to filePathsToRead first. It is crucial that you thoroughly understand its contents and adhere to the rules outlined within it. This file provides guidance on how to effectively contribute to the project and ensures the quality and consistency of contributions. Failure to comply with these guidelines may result in your contributions being rejected or requiring extensive revision. Let's work together in respecting and maintaining the standards set forth in the CONTRIBUTING.md to ensure the project's success.
 
 # Error message
 \`\`\`
@@ -86,6 +89,7 @@ ${sourceFile.fileContent}
     );
     const result = completion.data.choices[0].message?.content ?? '';
     const converted = this.convertApiResultToPatchCreatorResponse(result);
+
     if (!converted) {
       console.error(`can't convert api result. result: ${result}`);
       return null;
