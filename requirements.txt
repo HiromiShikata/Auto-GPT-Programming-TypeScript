@@ -87,7 +87,7 @@ pinecone-client==2.2.1
 pipx==1.2.0
 playsound==1.2.2
 protobuf==4.22.3
-psutil==5.5.1
+psutil==5.6.6
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycairo==1.16.2
