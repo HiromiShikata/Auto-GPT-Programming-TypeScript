@@ -115,7 +115,7 @@ PyYAML==6.0
 readability-lxml==0.8.1
 redis==4.5.4
 regex==2023.3.23
-reportlab==3.5.34
+reportlab==3.5.55
 requests==2.22.0
 requests-kerberos==0.12.0
 requests-ntlm==1.1.0
