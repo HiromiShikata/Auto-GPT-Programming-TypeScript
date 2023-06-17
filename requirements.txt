@@ -82,7 +82,7 @@ orjson==3.8.10
 packaging==23.1
 paramiko==2.6.0
 pexpect==4.6.0
-Pillow==7.0.0
+Pillow==9.0.1
 pinecone-client==2.2.1
 pipx==1.2.0
 playsound==1.2.2
