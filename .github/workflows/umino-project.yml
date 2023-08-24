@@ -4,41 +4,32 @@ on:
     types:
       - opened
       - reopened
-      - closed
       - assigned
       - unassigned
-      - labeled
-      - unlabeled
-      - edited
   pull_request:
     types:
       - opened
       - reopened
       - review_requested
-      - closed
       - assigned
       - unassigned
-      - labeled
-      - unlabeled
-      - edited
-  issue_comment:
-    types:
-      - created
 
 env:
-  backlog: To do in this week
   inbox: Inbox
   in_progress: In Progress
-  in_waiting: In Waiting
   gh_project_token: ${{ secrets.GH_TOKEN }}
   user: HiromiShikata
   project_id: 48
 
 jobs:
-  opened_or_reopened:
+  move_to_inbox:
     name: opened_or_reopened
     runs-on: ubuntu-latest
-    if: github.event.action == 'opened' || github.event.action == 'reopened'
+    if: >-
+      (github.event_name == 'issues' && github.event.issue.state == 'open') || 
+      (github.event_name == 'pull_request' && github.event.pull_request.state == 'open') &&
+      (github.event.action == 'opened' || github.event.action == 'reopened' || 
+      github.event.action == 'assigned' || github.event.action == 'unassigned')
     steps:
       - name: Move issue to ${{ env.inbox }}
         uses: leonsteinhaeuser/project-beta-automations@v2.1.0
@@ -48,87 +39,3 @@ jobs:
           project_id: ${{ env.project_id }}
           resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
           status_value: ${{ env.inbox }}
-  assigned_or_unassigned:
-    name: assigned_or_unassigned
-    runs-on: ubuntu-latest
-    if: github.event.action == 'assigned' || github.event.action == 'unassigned'
-    steps:
-      - name: Move issue to ${{ env.inbox }}
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
-        with:
-          gh_token: ${{ env.gh_project_token }}
-          user: ${{ env.user }}
-          project_id: ${{ env.project_id }}
-          resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
-          status_value: ${{ env.inbox }}
-      - uses: actions-ecosystem/action-remove-labels@v1
-        with:
-          labels: working right now
-
-  labeled_working:
-    runs-on: ubuntu-latest
-    if: github.event.action == 'labeled' && github.event.label.name == 'working right now'
-    steps:
-      - name: Move issue to ${{ env.in_progress }}
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
-        with:
-          gh_token: ${{ env.gh_project_token }}
-          user: ${{ env.user }}
-          project_id: ${{ env.project_id }}
-          resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
-          status_value: ${{ env.in_progress }}
-  unlabeled_working:
-    runs-on: ubuntu-latest
-    if: github.event.action == 'unlabeled' && github.event.label.name == 'working right now'
-    steps:
-      - name: Move issue to ${{ env.inbox }}
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
-        with:
-          gh_token: ${{ env.gh_project_token }}
-          user: ${{ env.user }}
-          project_id: ${{ env.project_id }}
-          resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
-          status_value: ${{ env.inbox }}
-  labeled_will_close:
-    runs-on: ubuntu-latest
-    if: github.event.action == 'labeled' && github.event.label.name == 'will close automatically by PR'
-    steps:
-      - name: Move issue to ${{ env.in_waiting }}
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
-        with:
-          gh_token: ${{ env.gh_project_token }}
-          user: ${{ env.user }}
-          project_id: ${{ env.project_id }}
-          resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
-          status_value: ${{ env.in_waiting }}
-  edited_title_for_waiting:
-    runs-on: ubuntu-latest
-    if: github.event.action == 'edited' && (startsWith(github.event.issue.title, 'Waiting for ') || startsWith(github.event.pull_request.title, 'Waiting for '))
-    steps:
-      - name: Move issue to ${{ env.in_waiting }}
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
-        with:
-          gh_token: ${{ env.gh_project_token }}
-          user: ${{ env.user }}
-          project_id: ${{ env.project_id }}
-          resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
-          status_value: ${{ env.in_waiting }}
-
-  comment-command:
-    runs-on: ubuntu-latest
-    steps:
-      - if: |
-          github.event.action == 'created'
-          && startsWith(github.event.comment.body, '#take')
-        run: |
-          curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" -d '{"assignees": ["${{ github.event.comment.user.login }}"]}' https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/assignees
-      - if: |
-          github.event.action == 'created'
-          && startsWith(github.event.comment.body, '#close')
-        run: |
-          curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" -X PATCH -d '{"state": "closed"}' https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
-      - if: |
-          github.event.action == 'created'
-          && startsWith(github.event.comment.body, '#offline')
-        run: |
-          curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" -X PATCH -d '{"labels": ["hiromishikata:task:offline"]}' https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
