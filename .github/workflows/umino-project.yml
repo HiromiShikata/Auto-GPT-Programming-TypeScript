@@ -32,7 +32,7 @@ jobs:
       github.event.action == 'assigned' || github.event.action == 'unassigned')
     steps:
       - name: Move issue to ${{ env.inbox }}
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
+        uses: leonsteinhaeuser/project-beta-automations@v2.2.1
         with:
           gh_token: ${{ env.gh_project_token }}
           user: ${{ env.user }}
