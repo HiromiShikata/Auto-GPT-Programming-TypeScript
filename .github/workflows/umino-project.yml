@@ -6,6 +6,7 @@ on:
       - reopened
       - assigned
       - unassigned
+      - labeled
   pull_request:
     types:
       - opened
@@ -13,6 +14,7 @@ on:
       - review_requested
       - assigned
       - unassigned
+      - labeled
 
 env:
   inbox: Inbox
@@ -22,14 +24,15 @@ env:
   project_id: 48
 
 jobs:
-  move_to_inbox:
+  umino-job:
     name: opened_or_reopened
     runs-on: ubuntu-latest
     if: >-
       (github.event_name == 'issues' && github.event.issue.state == 'open') || 
       (github.event_name == 'pull_request' && github.event.pull_request.state == 'open') &&
       (github.event.action == 'opened' || github.event.action == 'reopened' || 
-      github.event.action == 'assigned' || github.event.action == 'unassigned')
+      github.event.action == 'assigned' || github.event.action == 'unassigned' ||
+      (github.event.action == 'labeled' && github.event.label.name == 'hiromishikata:task:offline'))
     steps:
       - name: Move issue to ${{ env.inbox }}
         uses: leonsteinhaeuser/project-beta-automations@v2.2.1
@@ -39,3 +42,16 @@ jobs:
           project_id: ${{ env.project_id }}
           resource_node_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
           status_value: ${{ env.inbox }}
+      - name: Comment #offline
+        if: github.event_name == 'issues' && github.event.action == 'labeled' && github.event.label.name == 'hiromishikata:task:offline'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const issueComment = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '#offline'
+            };
+            github.issues.createComment(issueComment);
