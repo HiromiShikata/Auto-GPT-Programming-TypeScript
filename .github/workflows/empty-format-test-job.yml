@@ -1,0 +1,15 @@
+name: Empty format test
+
+on:
+  push
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "format"
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "test"
+
