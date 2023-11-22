@@ -1,15 +1,26 @@
 name: Empty format test
 
-on:
-  push
+on: push
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "format"
   test:
     runs-on: ubuntu-latest
     steps:
       - run: echo "test"
 
+  format:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: git pull
+      - run: npx prettier --write "**/*.{md,yaml,yml}" && git --no-pager diff
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'style: re-format / npx prettier --write "**/*.{md,yaml,yml}"'
