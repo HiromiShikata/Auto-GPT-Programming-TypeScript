@@ -21,10 +21,10 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-          destination_branch: 'main'
-          source_branch: ''
-          pr_title: '${{ steps.branch_name.outputs.branch }}'
-          pr_body: 'This is an auto-create PR.'
+          destination_branch: "main"
+          source_branch: ""
+          pr_title: "${{ steps.branch_name.outputs.branch }}"
+          pr_body: "This is an auto-create PR."
           draft: false
 
       - name: Assign PR to author
@@ -40,7 +40,7 @@ jobs:
         if: steps.create_pr.outputs.pr_number
         id: get_pr_id
         run: |
-          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create_pr.outputs.pr_number }}")
+          PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create_pr.outputs.pr_number }}")
           PR_ID=$(echo "$PR_DATA" | jq -r '.node_id')
           echo "::set-output name=node_id::$PR_ID"
 
