@@ -19,7 +19,7 @@ jobs:
 
       - name: Lint commits
         run: |
-          npx commitlint --from=HEAD~1 --to=HEAD --config ./.github/workflows/configs/commitlint.config.js
+          npx commitlint --from=origin/main --to=HEAD --config ./.github/workflows/configs/commitlint.config.js
 
   check-dontmerge:
     runs-on: ubuntu-latest
